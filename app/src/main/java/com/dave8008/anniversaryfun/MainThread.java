@@ -24,11 +24,12 @@ public class MainThread extends Thread {
     @Override
     public void run() {
         long startTime;
-        long timeMillis = 1000/MAX_FPS;
+        long timeMillis;
         long waitTime;
         int frameCount = 0;
         long totalTime = 0;
         long targetTime = 1000/MAX_FPS;
+        double lastAverageFPS = 0;
 
         while (running) {
             startTime = System.nanoTime();
@@ -66,10 +67,12 @@ public class MainThread extends Thread {
             frameCount++;
 
             if (frameCount == MAX_FPS) {
+                lastAverageFPS = averageFPS;
                 averageFPS = 1000/((totalTime/frameCount)/1000000);
                 frameCount = 0;
                 totalTime = 0;
-                System.out.println(averageFPS);
+                if (lastAverageFPS != averageFPS)
+                    System.out.println(averageFPS);
             }
         }
     }

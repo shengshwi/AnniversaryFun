@@ -19,6 +19,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private long celebrationTime;
     private boolean touching = false;
     private int score = 0;
+    private int goal = 10;
 
 
     public GamePanel(Context context) {
@@ -36,9 +37,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void startGame() {
-        spriteManager = new SpriteManager(350);
+        spriteManager = new SpriteManager(350, goal);
         touching = false;
         celebration = false;
+        score = 0;
     }
 
     @Override
@@ -71,7 +73,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
                 if (!celebration) {
                     touching = true;
                     playerPoint.set((int)event.getX(), (int)event.getY());
@@ -90,12 +91,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public void update() {
         if (celebration) return;
 
-        player.update(playerPoint, touching);
+        player.update(playerPoint);
         spriteManager.update();
 
-        if (spriteManager.playerCollide(player)) {
+        if (touching && spriteManager.playerCollide(player)) {
+            touching = false;  //only get one at a time
             score++;
-            if (score >= 10) {
+            if (score >= goal) {
                 celebration = true;
                 celebrationTime = System.currentTimeMillis();
             }
