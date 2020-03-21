@@ -23,7 +23,7 @@ public class SpriteManager {
         int currY = 0;
         for (int i = 0; i < goal; i++) {
             int xStart = (int)(Math.random()*(Constants.SREEN_WIDTH - Constants.SPRITE_WIDTH));
-            currY -= Constants.SPRITE_HEIGHT - (int)(Math.random()*spriteGap);
+            currY += -Constants.SPRITE_HEIGHT - (int)(Math.random()*spriteGap);
             sprites.add(new RectSprite(xStart, currY));
         }
     }

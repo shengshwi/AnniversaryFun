@@ -3,11 +3,16 @@ package com.dave8008.anniversaryfun;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private MainThread thread;
@@ -15,8 +20,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private RectPlayer player;
     private Point playerPoint;
     private SpriteManager spriteManager;
+
     private boolean celebration = false;
     private long celebrationTime;
+
+    private boolean intro = true;
+    private long introTime;
+
     private boolean touching = false;
     private int score = 0;
     private int goal = 10;
@@ -33,6 +43,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         playerPoint = new Point(150,150);
 
         startGame();
+        intro = true;
+        introTime = System.currentTimeMillis();
         setFocusable(true);
     }
 
@@ -40,6 +52,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         spriteManager = new SpriteManager(650, goal);
         touching = false;
         celebration = false;
+        intro = false;
         score = 0;
     }
 
@@ -73,11 +86,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (!celebration) {
+                if (!celebration && !intro) {
                     touching = true;
                     playerPoint.set((int)event.getX(), (int)event.getY());
                 }
-                else if (System.currentTimeMillis() - celebrationTime >= 3000) {
+                else if ((celebration && System.currentTimeMillis() - celebrationTime >= 1000) ||
+                        (intro && System.currentTimeMillis() - introTime >= 500)){
                     startGame();
                 }
                 break;
@@ -110,7 +124,44 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         canvas.drawColor(Color.WHITE);
 
-        player.draw(canvas);
-        spriteManager.draw(canvas);
+
+        if (celebration || intro) {
+            Paint textPaint = new Paint();
+            textPaint.setARGB(200, 254, 0, 0);
+            textPaint.setTextAlign(Paint.Align.CENTER);
+            if (celebration) {
+                List<String> lines = new ArrayList<>(Arrays.asList(
+                        "Dear Dani,",
+                        "Roses are red.",
+                        "Violets are blue.",
+                        "My heart has fallen",
+                        "over and over for you!"
+                ));
+                textPaint.setTextSize(80);
+                int y = 300;
+                for (String s: lines) {
+                    canvas.drawText(s, canvas.getWidth()/2, y, textPaint);
+                    y += 100;
+                }
+
+
+            }
+            textPaint.setTextSize(100);
+            String text = intro ? "Touch 10 boxes!" : "Happy Anniversary!!!";
+            canvas.drawText(text, canvas.getWidth()/2, canvas.getHeight()/2  , textPaint);
+            if (celebration) {
+                textPaint.setTextSize(80);
+                int y = canvas.getHeight()/2 + 220;
+                canvas.drawText("XOXO,", canvas.getWidth()/2 + 100, y, textPaint);
+                y += 100;
+                canvas.drawText("David", canvas.getWidth()/2 + 100, y, textPaint);
+            }
+            textPaint.setTextSize(50);
+            canvas.drawText("Touch screen to begin.", canvas.getWidth()/2,
+                    canvas.getHeight() - 150  , textPaint);
+        } else {
+            player.draw(canvas);
+            spriteManager.draw(canvas);
+        }
     }
 }
