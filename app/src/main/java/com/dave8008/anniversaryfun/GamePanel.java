@@ -37,7 +37,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void startGame() {
-        spriteManager = new SpriteManager(350, goal);
+        spriteManager = new SpriteManager(650, goal);
         touching = false;
         celebration = false;
         score = 0;

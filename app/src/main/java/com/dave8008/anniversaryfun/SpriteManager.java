@@ -53,7 +53,7 @@ public class SpriteManager {
         for (RectSprite sprite: remove) {
             int xStart = (int)(Math.random()*(Constants.SREEN_WIDTH - Constants.SPRITE_WIDTH));
             sprites.add(0, new RectSprite(xStart, 0 -
-                    Constants.SPRITE_HEIGHT - (int)(Math.random()*spriteGap)));
+                    Constants.SPRITE_HEIGHT - (int)(Math.random()*2*spriteGap)));
             sprites.remove(sprite);
         }
     }
