@@ -31,9 +31,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         player = new RectPlayer(new Rect(100,100,200, 200));
         playerPoint = new Point(150,150);
 
-        spriteManager = new SpriteManager(350);
-
+        startGame();
         setFocusable(true);
+    }
+
+    public void startGame() {
+        spriteManager = new SpriteManager(350);
+        touching = false;
+        celebration = false;
     }
 
     @Override
@@ -56,7 +61,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             try {
                 thread.setRunning(false);
                 thread.join();
-            } catch (Exception e) {e.printStackTrace();
+            } catch (Exception e) {e.printStackTrace();}
 
             retry = false;
         }
@@ -72,14 +77,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     playerPoint.set((int)event.getX(), (int)event.getY());
                 }
                 else if (System.currentTimeMillis() - celebrationTime >= 3000) {
-                    celebration = false;
+                    startGame();
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 touching = false;
+                break;
         }
         return true;
-//        return super.onTouchEvent(event);
     }
 
     public void update() {
