@@ -39,7 +39,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         thread = new MainThread(getHolder(), this);
 
-        player = new RectPlayer(new Rect(100,100,200, 200));
+        player = new RectPlayer(new Rect(0,0,100, 100));
         playerPoint = new Point(150,150);
 
         startGame();
@@ -147,14 +147,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
             }
             textPaint.setTextSize(100);
-            String text = intro ? "Touch 10 boxes!" : "Happy Anniversary!!!";
+            String text = intro ? "Touch 10 hearts!" : "Happy Anniversary!!!";
             canvas.drawText(text, canvas.getWidth()/2, canvas.getHeight()/2  , textPaint);
             if (celebration) {
                 textPaint.setTextSize(80);
                 int y = canvas.getHeight()/2 + 220;
-                canvas.drawText("XOXO,", canvas.getWidth()/2 + 100, y, textPaint);
+                canvas.drawText("X   X   ,", canvas.getWidth()/2 + 100, y, textPaint);
+                canvas.drawText("   ღ  ღ ", canvas.getWidth()/2 + 96, y-12, textPaint);
                 y += 100;
-                canvas.drawText("David", canvas.getWidth()/2 + 100, y, textPaint);
+                canvas.drawText("David\uD83D\uDC9E", canvas.getWidth()/2 + 100, y, textPaint);
             }
             textPaint.setTextSize(50);
             canvas.drawText("Touch screen to begin.", canvas.getWidth()/2,

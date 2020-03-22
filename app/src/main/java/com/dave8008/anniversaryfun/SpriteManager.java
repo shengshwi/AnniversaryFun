@@ -3,6 +3,7 @@ package com.dave8008.anniversaryfun;
 import android.graphics.Canvas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 public class SpriteManager {
@@ -21,10 +22,25 @@ public class SpriteManager {
 
     private void populateSprites(int goal) {
         int currY = 0;
+        ArrayList<String> hearts = new ArrayList<>(Arrays.asList(
+                "\uD83D\uDC9D",
+                "\uD83D\uDC98",
+                "\uD83D\uDC97",
+                "\uD83D\uDC96",
+                "\uD83D\uDC93",
+                "\uD83D\uDC99",
+                "\uD83D\uDC9C",
+                "\uD83D\uDC9F",
+                "❦",
+                "❤",
+                "ღ",
+                "ও",
+                "❣"
+        ));
         for (int i = 0; i < goal; i++) {
             int xStart = (int)(Math.random()*(Constants.SREEN_WIDTH - Constants.SPRITE_WIDTH));
             currY += -Constants.SPRITE_HEIGHT - (int)(Math.random()*spriteGap);
-            sprites.add(new RectSprite(xStart, currY));
+            sprites.add(new RectSprite(xStart, currY, hearts.get(i)));
         }
     }
 
@@ -42,19 +58,13 @@ public class SpriteManager {
     }
 
     public void update() {
-        ArrayList<RectSprite> remove = new ArrayList<>();
         for (RectSprite sprite: sprites) {
             sprite.incrementY();
             if (sprite.getRectangle().top >= Constants.SREEN_HEIGHT) {
-                remove.add(sprite);
+                sprite.setPosAndSpeed(
+                        (int)(Math.random()*(Constants.SREEN_WIDTH - Constants.SPRITE_WIDTH)),
+                        0 - Constants.SPRITE_HEIGHT - (int)(Math.random()*2*spriteGap));
             }
-        }
-
-        for (RectSprite sprite: remove) {
-            int xStart = (int)(Math.random()*(Constants.SREEN_WIDTH - Constants.SPRITE_WIDTH));
-            sprites.add(0, new RectSprite(xStart, 0 -
-                    Constants.SPRITE_HEIGHT - (int)(Math.random()*2*spriteGap)));
-            sprites.remove(sprite);
         }
     }
 
