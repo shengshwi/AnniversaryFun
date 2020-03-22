@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -22,6 +23,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private SoundPool soundPool;
     private int soundIds[];
     private int currentSound = 0;
+    private MediaPlayer mediaPlayer;
 
     private RectPlayer player;
     private Point playerPoint;
@@ -44,6 +46,21 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
 
         thread = new MainThread(getHolder(), this);
+        initAudio(context);
+
+        player = new RectPlayer(new Rect(0,0,200, 200));
+        playerPoint = new Point(150,150);
+
+        startGame();
+        intro = true;
+        introTime = System.currentTimeMillis();
+        setFocusable(true);
+    }
+
+    private void initAudio(Context context) {
+        mediaPlayer = MediaPlayer.create(context, R.raw.anewbeginning);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
 
         AudioAttributes attrs = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_GAME)
@@ -56,14 +73,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         soundIds = new int[10];
         soundIds[0] = soundPool.load(context, R.raw.touch1, 1);
         soundIds[1] = soundPool.load(context, R.raw.touch2, 1);
-
-        player = new RectPlayer(new Rect(0,0,200, 200));
-        playerPoint = new Point(150,150);
-
-        startGame();
-        intro = true;
-        introTime = System.currentTimeMillis();
-        setFocusable(true);
+        soundIds[2] = soundPool.load(context, R.raw.applause, 1);
     }
 
     public void startGame() {
@@ -90,10 +100,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         boolean retry = true;
-        while (true) {
+        while (retry) {
             try {
                 thread.setRunning(false);
                 thread.join();
+                mediaPlayer.release();
+                soundPool.release();
+
             } catch (Exception e) {e.printStackTrace();}
 
             retry = false;
@@ -133,6 +146,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             touching = false;  //only get one at a time
             score++;
             if (score >= goal) {
+                soundPool.play(soundIds[Constants.APPLAUSE], 1, 1, 1, 0, 1.0f);
+
                 celebration = true;
                 celebrationTime = System.currentTimeMillis();
             }
@@ -177,10 +192,17 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 canvas.drawText("   ღ  ღ ", canvas.getWidth()/2 + 96, y-12, textPaint);
                 y += 100;
                 canvas.drawText("David\uD83D\uDC9E", canvas.getWidth()/2 + 100, y, textPaint);
+                textPaint.setTextSize(50);
+                canvas.drawText("Touch screen to begin.", canvas.getWidth()/2,
+                        canvas.getHeight() - 150  , textPaint);
+            } else {
+                textPaint.setTextSize(50);
+                canvas.drawText("Touch screen to begin.", canvas.getWidth()/2,
+                        canvas.getHeight() - 250  , textPaint);
+                canvas.drawText("Music: https://www.bensound.com", canvas.getWidth()/2,
+                        canvas.getHeight() - 150, textPaint);
+
             }
-            textPaint.setTextSize(50);
-            canvas.drawText("Touch screen to begin.", canvas.getWidth()/2,
-                    canvas.getHeight() - 150  , textPaint);
         } else {
             player.draw(canvas);
             spriteManager.draw(canvas);
