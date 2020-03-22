@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
@@ -16,6 +18,10 @@ import java.util.List;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private MainThread thread;
+
+    private SoundPool soundPool;
+    private int soundIds[];
+    private int currentSound = 0;
 
     private RectPlayer player;
     private Point playerPoint;
@@ -38,6 +44,18 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
 
         thread = new MainThread(getHolder(), this);
+
+        AudioAttributes attrs = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(10)
+                .setAudioAttributes(attrs)
+                .build();
+        soundIds = new int[10];
+        soundIds[0] = soundPool.load(context, R.raw.touch1, 1);
+        soundIds[1] = soundPool.load(context, R.raw.touch2, 1);
 
         player = new RectPlayer(new Rect(0,0,200, 200));
         playerPoint = new Point(150,150);
@@ -109,6 +127,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         spriteManager.update();
 
         if (touching && spriteManager.playerCollide(player)) {
+            currentSound = ++currentSound % Constants.MAX_SOUNDS;
+            soundPool.play(soundIds[currentSound], 1, 1, 1, 0, 1.0f);
+
             touching = false;  //only get one at a time
             score++;
             if (score >= goal) {
