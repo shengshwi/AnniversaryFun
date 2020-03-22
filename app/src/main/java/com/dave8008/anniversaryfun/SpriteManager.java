@@ -61,7 +61,7 @@ public class SpriteManager {
     public void update() {
         for (RectSprite sprite: sprites) {
             sprite.incrementY();
-            if (sprite.getRectangle().top >= Constants.SREEN_HEIGHT) {
+            if (sprite.getRectangle().top >= Constants.SREEN_HEIGHT + Constants.SPRITE_HEIGHT) {
                 sprite.setPosAndSpeed(
                         (int)(Math.random()*(Constants.SREEN_WIDTH - Constants.SPRITE_WIDTH)),
                         0 - Constants.SPRITE_HEIGHT - (int)(Math.random()*2*spriteGap));
