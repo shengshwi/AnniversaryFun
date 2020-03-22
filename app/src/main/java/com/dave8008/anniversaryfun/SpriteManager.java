@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 public class SpriteManager {
     private ArrayList<RectSprite> sprites;
@@ -46,9 +47,9 @@ public class SpriteManager {
 
     public boolean playerCollide(RectPlayer player) {
 
-        Iterator<RectSprite> it = sprites.iterator();
-        while (it.hasNext()) {
-            RectSprite sprite = it.next();
+        ListIterator<RectSprite> it = sprites.listIterator(sprites.size());
+        while (it.hasPrevious()) {
+            RectSprite sprite = it.previous();
             if (sprite.playerCollide(player)) {
                 it.remove();
                 return true;
